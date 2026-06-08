@@ -48,3 +48,53 @@ When connecting to a secure website via Wi-Fi:
 * **Radio waves** transmitting the data operate at **Layer 1**.
 
 * Add Day 1 Notes
+
+
+
+## 📅 Day 2: Network Visibility & Protocols (Wireshark, DNS, & TCP)
+
+### 🔬 Core Tool: Wireshark (Network Traffic Analysis)
+Moving from theory to reality requires packet visibility. **Wireshark** acts as a network packet analyzer (effectively a "CCTV camera" for network traffic), capturing and displaying data packets traveling across a network interface in real time.
+
+* **Network Interfaces:** The point where a device connects to a network (e.g., `Wi-Fi` for wireless, `Ethernet` for wired cables, or `Loopback` for internal system testing).
+* **The Baseline Noise:** Live networks are constantly generating "noisy" background traffic. Analyzing traffic requires filtering out the noise to focus on specific protocols, source IPs, or anomalous indicators.
+* **The Security Perspective:** Wireshark is the fundamental tool for traffic monitoring, intrusion detection, and incident response. Without packet visibility, a SOC analyst is blind to active threats.
+
+---
+
+### 📖 Protocol Focus: DNS (The Internet Phonebook)
+Computers do not communicate via human-readable domain names (like `google.com`); they communicate via numerical IP addresses. The **Domain Name System (DNS)** resolves domain names into routable IP addresses.
+
+
+
+* **Packet Filtering:** In Wireshark, applying the display filter `dns` isolates domain queries and responses.
+* **DNS Record Structure:** A standard query seeks an **A Record** (which maps a hostname to an IPv4 address).
+* > ⚠️ **Security Engineering Insight:** DNS traffic often remains unencrypted even if the subsequent web traffic is encrypted via HTTPS/TLS. Attackers frequently target DNS through **DNS Poisoning** or malicious redirection. For an analyst, DNS logs reveal exactly what external domains an internal asset is attempting to contact *before* an encrypted session ever begins.
+
+---
+
+### 🤝 Protocol Focus: The TCP 3-Way Handshake
+Before data can reliably move between a client and a server, the **Transmission Control Protocol (TCP)** must establish a connection. This connection is opened using a mandatory, structured process called the **3-Way Handshake**.
+Client                               Server
+|                                    |
+| ------------ SYN ------------->    |  (Can we connect?)
+|                                    |
+| <---------- SYN-ACK -----------    |  (Yes, I am ready. Are you?)
+|                                    |
+| ------------ ACK ------------->    |  (Confirmed. Connection open.)
+|                                    |
+
+
+* **Step 1: SYN (Synchronize):** The client sends a packet with the SYN flag set to request a connection.
+* **Step 2: SYN-ACK (Synchronize-Acknowledge):** The server responds, confirming receipt of the request and asking to synchronize back.
+* **Step 3: ACK (Acknowledge):** The client sends a final confirmation packet. The connection is now established, and data (such as web pages) can safely flow.
+
+#### 🧠 Analyst Thinking: Analyzing the Handshake in Wireshark
+By applying the `tcp` filter in Wireshark, we can audit these handshakes to diagnose network health or malicious intent:
+* **Normal Behavior:** A clean sequence of `SYN` ➔ `SYN-ACK` ➔ `ACK`.
+* **Suspicious Behavior (Reconnaissance):** A flood of rapid `SYN` packets to multiple different ports without ever completing the handshake with an `ACK`. This is a classic **SYN Port Scan** used by attackers to map out open vulnerabilities on a target system.
+* **Denial of Service (DoS):** Flooding a server with endless `SYN` requests to exhaust its resources keeping half-open connections waiting.
+
+* Add Day 2 Notes
+
+
