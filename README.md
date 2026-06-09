@@ -205,3 +205,49 @@ Every tool and protocol learned so far serves a distinct purpose within this lif
 > 🧠 **The SOC Analyst Mindset:** When analyzing an active incident, you must always ask: *"Where are we currently positioned on the attack chain?"* Catching an attacker during **Reconnaissance** prevents a breach entirely. Catching them during **Post-Exploitation** turns into a high-priority incident response and containment operation.
 >
 > Add Day 4 Notes
+
+
+## 📅 Day 5: Behavioral Traffic Analysis (Detecting Attacks in Real-Time)
+
+### 📊 Core Concept: Signatures vs. Behavioral Anomalies
+A packet analysis tool like **Wireshark** will almost never pop up with a flashing red light saying *"You are being hacked!"* Instead, security analysts must develop an eye for identifying **patterns that deviate from baseline normal behavior**. 
+
+The transition from a network administrator to a SOC analyst requires a fundamental shift in perspective: **moving from packet reading to behavioral analysis.**
+
+---
+
+### 🚨 3 Major Detection Patterns Every Analyst Must Know
+
+#### 🚪 1. Detecting Port Scanning (Reconnaissance)
+* **The Pattern:** A single source IP addresses a massive volume of distinct destination ports within a microsecond window.
+* **The Visual Indicator in Wireshark:** Endless lines of `SYN` flags with a complete absence of subsequent `SYN-ACK` or `ACK` responses.
+* **Analyst Action Matrix:** 1. Isolate the scanning source IP.
+  2. Map out exactly which ports are being targeted.
+  3. Update firewall policies to block or heavily monitor that specific IP infrastructure.
+
+#### 🧬 2. Detecting ARP Spoofing (Local MitM)
+* **The Pattern:** Conflict in network device identity. The local network gateway IP address suddenly begins flapping between two completely different hardware addresses.
+* **The Visual Indicator in Wireshark:** Multiple unsolicited ARP replies claiming ownership over the same internal gateway IP, paired with warning indicators of duplicate IP/MAC assignments.
+* **The Threat:** An active Man-in-the-Middle (MitM) attack where an attacker is positioning themselves to sniff or modify data in transit.
+
+#### 🌐 3. Detecting DNS Anomalies (Malware Communication)
+* **The Pattern:** Spikes in highly unusual or structurally broken domain resolution queries.
+* **The Visual Indicator in Wireshark:** Repeated queries for long, random alphanumeric strings (e.g., `x7k2j9-login-auth-verify.net`) or massive spikes in failed domain lookups.
+* **The Threat:** This often indicates **Command and Control (C2) beaconing** or malware utilizing a Domain Generation Algorithm (DGA) to establish a back-channel connection to an external threat actor.
+
+---
+
+### 🧠 The Analyst Rulebook: Normal vs. Suspicious Traffic
+
+To maintain network visibility, a SOC analyst checks real-time traffic against this standard baseline grid:
+
+| Traffic Characteristic | Normal Baseline Behavior | Suspicious/Anomalous Behavior |
+| :--- | :--- | :--- |
+| **Packet Flow Volumetrics** | Steady, predictable streams of data. | Sudden bursts or floods of rapid, identical packets. |
+| **Connection State** | Complete TCP handshakes (`SYN` ➔ `SYN-ACK` ➔ `ACK`). | Fragmented or half-open connections (`SYN` floods). |
+| **Domain Navigation** | Valid, trusted domains mapping to static web services. | Random, obfuscated domain strings with high failure rates. |
+
+> 📊 **SOC Operational Takeaway:** Attackers hide in plain sight by using your network's native protocols against you. They don't generate "corrupted" packets; they generate **abnormal behavioral volumes and sequences** using perfectly valid protocols.
+
+
+> Add Day 5 Notes
