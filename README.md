@@ -337,7 +337,8 @@ To simulate network traffic, reconnaissance, and defensive monitoring safely, a 
 
 ### 🖥️ Lab Deployment Blueprint
 
-A basic functional security lab requires two primary nodes operating on a controlled virtual network:+-----------------------------------------------------------------+
+A basic functional security lab requires two primary nodes operating on a controlled virtual network:
++-----------------------------------------------------------------+
 |                       VIRTUAL HYPERVISOR                        |
 |                                                                 |
 |  [ Attacker/Analyst Node ]              [ Target Node ]         |
