@@ -251,3 +251,67 @@ To maintain network visibility, a SOC analyst checks real-time traffic against t
 
 
 > Add Day 5 Notes
+
+
+## 📅 Day 6: The Incident Response Lifecycle (The Analyst Workflow)
+
+### 🧠 The Mindset Shift: From Analysis to Investigation
+A junior technician looks at network logs as isolated events. A professional **SOC Analyst** views logs through the lens of an investigation workflow. The ultimate rule of the security mindset is simple: 
+
+> ❌ **Incorrect:** *"I saw a malicious packet."* >  **Correct:** *"I identified a pattern of anomalous behavior, mapped it to a specific stage of the attack lifecycle, and determined its operational meaning."*
+
+---
+
+### 🔁 The 5-Step Security Engineer Workflow
+
+Every security investigation—whether in a small lab or an enterprise Security Operations Center (SOC)—follows this structured cycle:[Observe] ➔ [Identify] ➔ [Analyze] ➔ [Confirm] ➔ [Respond]
+#### 👀 1. Observe (Data Collection)
+* **Action:** Continuously gather and monitor live environmental data.
+* **SOC Execution:** Using packet capture tools (Wireshark), firewalls, and logging systems to monitor raw packets, DNS queries, TCP connection states, and ARP broadcasts.
+
+#### 🏷️ 2. Identify (Classification)
+* **Action:** Classify and label the incoming traffic pattern.
+* **SOC Execution:** Sorting traffic into high-level categories (e.g., *Is this standard web traffic, a potential scan, internal routing noise, or suspicious lookup traffic?*). You aren't fixing the issue yet—you are triage-labeling it.
+
+#### 🔍 3. Analyze (Deep Inspection)
+* **Action:** Drill deep into the technical metrics of the flagged traffic.
+* **SOC Execution:** Inspecting specific **Source/Destination IPs**, targeted **Port numbers**, protocol handshakes, packet frequency, and timestamp distribution. You are answering: *"Does this traffic timing and structure make operational sense?"*
+
+#### 🚨 4. Confirm (The Verdict)
+* **Action:** Compare findings against known threat matrices to verify an actual attack.
+* **SOC Execution:** Correlating the evidence to differentiate a false positive from a true threat:
+  * **Normal Indicator:** Completed TCP handshakes to standard web ports (80/443).
+  * **Attack Indicator:** Incomplete `SYN` floods targeting hundreds of sequential doors.
+
+#### 🛡️ 5. Respond (Defensive Action)
+* **Action:** Execute containment and mitigation strategies.
+* **SOC Execution:** Isolating the affected internal asset, blacklisting the malicious external source IP at the firewall, raising an incident ticket, and preserving the packet logs for forensics.
+
+---
+
+### 🧩 System Integration: How the Foundation Connects
+
+Your entire networking foundation serves an explicit purpose within this unified workflow:
+
+| Concept / Tool | Operational Role in the Analyst Workflow |
+| :--- | :--- |
+| **Wireshark** | **Observe:** Provides complete, unfiltered network visibility. |
+| **DNS Traffic** | **Identify:** Immediately maps out what external services an asset is calling. |
+| **TCP Protocol** | **Analyze:** Allows the analyst to check connection health and completeness. |
+| **Ports** | **Identify:** Signals exactly what services are being targeted or exposed. |
+| **ARP Logs** | **Detect:** Pinpoints local identity-spoofing and subnet tampering. |
+| **Nmap Mindset** | **Anticipate:** Gives the defender insight into how an attacker probes a network. |
+
+---
+
+### 🧪 Incident Walkthrough Blueprint (The Workflow in Action)
+
+When presented with an alert, the workflow executes systematically:
+
+1. **Observe:** Raw traffic spikes are flagged in the packet capture console.
+2. **Identify:** High-density, repetitive outbound communication is classified as network probing.
+3. **Analyze:** Verification shows one single external IP sending thousands of rapid `SYN` requests to sequential ports with zero `ACK` replies.
+4. **Confirm:** Verified as an active **Reconnaissance Port Scan**.
+5. **Respond:** Construct a firewall rule to drop all incoming traffic from the source IP and log the event.
+
+Add Day 6 Notes - Workflow Complete   
