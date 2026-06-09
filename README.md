@@ -98,3 +98,59 @@ By applying the `tcp` filter in Wireshark, we can audit these handshakes to diag
 * Add Day 2 Notes
 
 
+## 📅 Day 3: Reconnaissance, Local Attacks, & Traffic Monitoring
+
+### 🔌 Protocol Abuse: Port Scanning (Finding the Open Doors)
+An IP address identifies a device on a network, but **Ports** identify the specific services or applications running on that device. Think of an IP address as a building's street address, and ports as the individual doors inside.
+
+#### Common Ports to Memorize:
+* **Port 22:** SSH (Remote Secure Login)
+* **Port 53:** DNS (Domain Name Resolution)
+* **Port 80:** HTTP (Unencrypted Web Traffic)
+* **Port 443:** HTTPS (Encrypted Web Traffic)
+* **Port 3389:** RDP (Remote Desktop Protocol)
+
+**Port Scanning** is the systematic probing of a target system to discover which ports are open. Attackers use tools like **Nmap** to map out these open doors before launching an exploit.
+
+
+
+#### 🔍 The Wireshark Detection Pattern:
+When a port scan occurs, the traffic pattern is highly predictable:
+* A flood of rapid **SYN** packets sent to a wide range of different ports from a single source IP.
+* The absence of completion packets (**ACK**). 
+* **The Signature:** `SYN` ➔ `SYN` ➔ `SYN` ➔ `SYN` without ever finalizing the 3-way handshake. This indicates an attacker is scanning to see what responds.
+
+---
+
+### 📡 Protocol Abuse: ARP Spoofing (Tricking the Local Network)
+The **Address Resolution Protocol (ARP)** is used inside local networks (like a home Wi-Fi or office LAN) to map an abstract IP address to a physical hardware identity, known as a **MAC Address**.
+
+* **The Analogy:** If an IP address is a house address, a MAC address is the specific identity of the person living there. ARP continuously asks: *"Who has this IP? Tell your MAC address to the network."*
+* **The Vulnerability:** ARP was designed without built-in authentication. Devices blindly trust and cache incoming ARP replies.
+
+#### 💣 Man-in-the-Middle (MITM) via ARP Poisoning:
+An attacker can exploit this lack of authentication by broadcasting fake ARP replies to the local network, claiming that *their* MAC address belongs to the default gateway (the local router).
+
+
+
+* **The Result:** The victim device sends all its internet traffic directly to the attacker instead of the router, allowing the attacker to intercept, sniff, or modify data.
+* **Detection:** In Wireshark, filtering by `arp` allows an analyst to look for duplicate MAC address entries or a single MAC address suddenly claiming ownership over multiple distinct IP addresses.
+
+---
+
+### 👀 Defensive Mastery: Traffic Monitoring
+Traffic monitoring is the continuous, real-time observation of network packets to distinguish **Normal Baseline Behavior** from **Suspicious Anomalies**. 
+
+Security engineers do not look for a magical "hacked" packet; they look for abnormal behavior patterns inside standard protocols.
+
+| Traffic Type | Indicators & Patterns |
+| :--- | :--- |
+| **Normal Traffic** | Occasional DNS queries, completed TCP handshakes (`SYN` ➔ `SYN-ACK` ➔ `ACK`), steady HTTPS streams. |
+| **Suspicious: Port Scan** | High-volume, rapid `SYN` packets targeting multiple sequential ports with no `ACK` follow-up. |
+| **Suspicious: ARP Spoofing** | Sudden floods of unsolicited ARP replies mapping a single MAC address to different device IPs. |
+| **Suspicious: DNS Anomalies** | Repeated requests for random-looking, long, or unreadable domain names (indicative of malware beaconing). |
+
+> 🧠 **The SOC Analyst Mindset Shift:** A great security engineer shifts their focus from asking *"What does this packet mean?"* to asking *"Is this specific behavioral pattern normal or malicious for my environment?"*
+
+
+Add Day 3 Notes
