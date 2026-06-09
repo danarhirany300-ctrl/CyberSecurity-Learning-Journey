@@ -154,3 +154,54 @@ Security engineers do not look for a magical "hacked" packet; they look for abno
 
 
 Add Day 3 Notes
+
+
+
+## 📅 Day 4: The Full Attack Lifecycle (The Cyber Kill Chain)
+
+### 🔗 Core Concept: The Multi-Stage Attack Path
+Real-world cyber attacks are rarely single, isolated events. Instead, they occur as a structured chain of sequential phases over time. Security professionals refer to this progression as the **Attack Lifecycle** or **Attack Path**.
+
+
+
+---
+
+### 💣 The 4 Core Stages of a Network Attack
+
+#### 🔍 1. Reconnaissance (Target Discovery)
+The attacker maps out the landscape to identify live targets, active IP addresses, and open ports.
+* **Primary Tool:** `Nmap` (Port scanning and network mapping).
+* **SOC Visibility Indicator:** A high volume of rapid `SYN` packets targeting multiple ports from a singular external source IP without establishing completed connections.
+
+#### 🚪 2. Enumeration (Deep Information Gathering)
+Once an open port or service is discovered, the attacker probes deeper to find out exactly *what* is running behind that door.
+* **Objective:** Identify exact software versions, operating systems, and misconfigured services.
+* **The Danger:** Vulnerabilities are highly specific to software versions. Knowing the exact version allows attackers to look up pre-made exploits.
+
+#### 💥 3. Exploitation (The Breach)
+The attacker uses the information gathered to execute an attack against a known weakness.
+* **Examples:** Exploiting an unpatched web service vulnerability, running an SQL Injection attack, or launching an ARP Spoofing attack on the local subnet.
+* **SOC Visibility Indicator:** Anomalous protocol payloads, unauthorized remote connection attempts, or unusual traffic flows in Wireshark.
+
+#### 🎯 4. Post-Exploitation (Control & Persistence)
+After gaining an initial foothold, the attacker moves to secure their position.
+* **Objective:** Establish persistent backdoor access, move laterally into other sensitive internal networks, and begin data exfiltration (stealing data).
+
+---
+
+### 🧩 Connecting the Architecture: The Security Matrix
+
+Every tool and protocol learned so far serves a distinct purpose within this lifecycle:
+
+| Concept / Tool | Role in the Attack Lifecycle | SOC Analytical Value |
+| :--- | :--- | :--- |
+| **DNS** | Locating and identifying target domains. | Pinpoints what external entities assets are contacting. |
+| **Ports** | Identifying open entry points (doors) into a system. | Defines the available attack surface. |
+| **TCP Handshake** | Establishing the base connection protocol. | Helps identify port scanning vs. legitimate connections. |
+| **ARP Protocol** | Local network identity management (IP to MAC). | Used to spot local Man-in-the-Middle (MITM) hijacking. |
+| **Nmap** | Active scanning and reconnaissance utility. | Simulates attacker probing behavior. |
+| **Wireshark** | Full packet visibility and traffic monitoring. | Allows real-time analysis of the active attack stage. |
+
+> 🧠 **The SOC Analyst Mindset:** When analyzing an active incident, you must always ask: *"Where are we currently positioned on the attack chain?"* Catching an attacker during **Reconnaissance** prevents a breach entirely. Catching them during **Post-Exploitation** turns into a high-priority incident response and containment operation.
+>
+> Add Day 4 Notes
