@@ -317,6 +317,7 @@ When presented with an alert, the workflow executes systematically:
 Add Day 6 Notes - Workflow Complete   
 
 
+Markdown
 ## 📅 Day 7: Building a Sandboxed Cybersecurity Practice Lab
 
 ### 🧪 Core Concept: The Isolated Lab Environment
@@ -338,6 +339,7 @@ To simulate network traffic, reconnaissance, and defensive monitoring safely, a 
 ### 🖥️ Lab Deployment Blueprint
 
 A basic functional security lab requires two primary nodes operating on a controlled virtual network:
+
 +-----------------------------------------------------------------+
 |                       VIRTUAL HYPERVISOR                        |
 |                                                                 |
@@ -347,7 +349,10 @@ A basic functional security lab requires two primary nodes operating on a contro
 |               |                                  |              |
 +---------------+----------------------------------+--------------+
 |                                  |
-+--- [ Host-Only / Internal LAN ] -+1. **Node 1: The Attacker / Analyst Workstation (Kali Linux)**
++--- [ Host-Only / Internal LAN ] -+
+
+
+1. **Node 1: The Attacker / Analyst Workstation (Kali Linux)**
    * **Purpose:** Acts as the primary operations console. Kali comes pre-packaged with essential offensive and defensive utilities, including `Wireshark`, `Nmap`, `tcpdump`, and packet manipulation tools.
 2. **Node 2: The Target Machine (Ubuntu, Windows, or Metasploitable)**
    * **Purpose:** Acts as the asset being evaluated. This machine runs the services, open ports, or web applications that the analyst targets and monitors.
