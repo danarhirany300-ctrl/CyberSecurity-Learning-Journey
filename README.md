@@ -384,3 +384,84 @@ Once the lab environment is initialized, three fundamental validation exercises 
 > 📜 **The Golden Rule:** Only scan, probe, or test systems that **you explicitly own** or have received **direct, written authorization** to evaluate. Unauthorized network scanning against external internet infrastructure is illegal and easily flagged by enterprise intrusion detection systems. True professionals master their trade inside controlled environments.
 
 Add Day 7 Notes - Lab Architecture Complete
+
+
+
+## 📅 Day 8: Lab Analysis & Deconstructing Nmap Scan Types
+
+### 🧪 Practical Analysis: Generating Baseline Lab Traffic
+With an isolated sandbox environment configured, an analyst can generate, capture, and trace network traffic baseline models without external network noise. 
+
+Running a live packet capture on the active virtual interface (`eth0` or `enp0s3`) while executing simple tasks connects network theory directly to tool outputs:
+
+#### 1. ICMP/Ping Traffic Analysis
+* **Display Filter:** `icmp`
+* **Observation:** Executing a ping command displays pairs of **Echo Request** and **Echo Reply** packets.
+* **Analyst Insight:** While administrators use ICMP for diagnostic connection testing, threat actors manipulate it during early **Host Discovery** phases to map out active internal targets on a subnet.
+
+#### 2. The Comprehensive Web Connection Story
+By filtering traffic while loading a webpage inside the lab environment, the micro-steps of network connectivity become visible in sequence:
+* **Step 1 (`dns` filter):** The client application broadcasts a query asking for a domain name resolution and receives the destination IP address.
+* **Step 2 (`tcp` filter):** The client initiates the mandatory **3-Way Handshake** (`SYN` ➔ `SYN-ACK` ➔ `ACK`) to open a reliable channel with the destination IP.
+* **Step 3 (`tls` or `http` filter):** Secure, encrypted application layer data payload transmission begins.
+
+---
+
+### 📡 Active Reconnaissance: Deconstructing Nmap Mechanics
+Network Mapper (**Nmap**) is an essential tool utilized to discover active hosts and open services. Rather than executing obscure exploits, Nmap functions simply by **sending precise packets to target ports and studying the structural responses returned**.
+
+#### The 3 Target Port States:
+1. **Open:** A service is actively listening and accepting connections on this door.
+2. **Closed:** The target system is reachable, but no application or service is listening on this port.
+3. **Filtered:** A firewall or network security control is actively blocking or dropping the probe packets, preventing Nmap from determining if the port is accessible.
+
+---
+
+### 🚨 Core Scan Profiles: TCP Connect vs. SYN Stealth Scans
+
+Different Nmap scanning profiles utilize distinct packet flags to probe systems, altering their speed, signature, and detectability on the network.
+
+#### Profile A: TCP Connect Scan (`nmap -sT [TARGET_IP]`)
+Nmap commands the operating system to establish a **full, complete 3-Way Handshake** with each targeted port.
+
+
+
+Kali (Nmap)                             Target Asset
+|                                       |
+| ------------- SYN -------------->     |  (Checking port service)
+| <----------- SYN-ACK ------------     |  (Port is OPEN & ready)
+| ------------- ACK -------------->     |  (Handshake complete!)
+| ------------- RST -------------->     |  (Disconnecting immediately)
+
+* **SOC Visibility Verdict:** **Highly Visible.** Because a full TCP session is completed, the application layer software logs the connection attempt. This leaves an explicit, easily auditable trail in system logs.
+
+#### Profile B: SYN Stealth Scan (`nmap -sS [TARGET_IP]`)
+Nmap cuts the connection short *before* the handshake can fully establish, keeping the channel "half-open".
+
+
+
+Kali (Nmap)                             Target Asset
+|                                       |
+| ------------- SYN -------------->     |  (Probing target port)
+| <----------- SYN-ACK ------------     |  (Port is OPEN)
+| ------------- RST -------------->     |  (Reset! Connection killed)
+
+* **SOC Visibility Verdict:** **Stealthy & Dangerous.** Because the `ACK` packet is never sent, the connection remains half-open and is instantly dropped via a Reset (`RST`) flag. Most legacy application logs only record *completed* connections, allowing an attacker to map open ports without triggering standard service alerts.
+
+---
+
+### 🧠 The Analyst Signature: Recognizing a SYN Scan in Wireshark
+
+When an attacker initiates a stealth SYN scan across your environment, the Wireshark display pane exhibits a highly distinct behavioral pattern:
+
+Source IP         Destination IP    Protocol    Info
+192.168.56.101    192.168.56.102    TCP         54321 → 80 [SYN]
+192.168.56.102    192.168.56.101    TCP         80 → 54321 [SYN, ACK]
+192.168.56.101    192.168.56.102    TCP         54321 → 80 [RST]
+
+
+> 🚨 **Behavioral Fingerprint:** Seeing a rapid stream of sequential incoming `SYN` packets across thousands of different destination ports, followed immediately by outgoing `RST` responses, is the absolute signature of an active **SYN Reconnaissance Scan**. A SOC analyst must immediately extract the source IP address and implement a firewall block to thwart the threat actor's enumeration phase.
+
+
+Add Day 8 Notes - Port Scanning Forensics
+
